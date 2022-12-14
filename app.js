@@ -19,8 +19,9 @@ app.get('/', async (req, res) => {
 		// const buff = new Uint8Array(body);
 		// console.log("Src : ", body)
 		const buff = Buffer.from(body)
-		const imgbuff = buff.toString('base64');
-		console.log(imgbuff)
+		// const imgbuff = buff.toString('base64');
+		// console.log(imgbuff)
+		const tmpName = await writeFileSync(buff)
 		// const img = Buffer.from(imgBuff, "base64");
 
 		// return res.json({
@@ -31,7 +32,7 @@ app.get('/', async (req, res) => {
 		// console.log(buff.toString('base64'))
 		// const logo = await fetchImageLogo("https://i.imgur.com/2ff9bM7.png");
 
-		doc.image('data:image/png;base64,'+imgbuff, {
+		doc.image(tmpName, {
 			fit: [250, 300],
 			align: 'center',
 			valign: 'center',
@@ -51,6 +52,11 @@ app.get('/', async (req, res) => {
 		// end document
 		doc.end()
 
+		if (!unlinkSync(tmpName)) {
+			return res.json({
+				error: 'Clear Tmp Error.'
+			})
+		}
 		// wait for the writing to finish
 		return res.json({
 			error: null
@@ -97,5 +103,30 @@ async function fetchImage() {
 			if (error) reject(error);
 			resolve(response.body);
 		});
+	})
+}
+
+function writeFileSync(content) {
+	return new Promise((resolve, reject) => {
+		fs.writeFile(process.cwd() + '/cccc.png', content, function (err) {
+			if (!err) {
+				console.log(process.cwd() + '/cccc.png')
+				return resolve(process.cwd() + '/cccc.png')
+			} else {
+				return reject(err)
+			}
+		})
+	})
+}
+
+function unlinkSync(filename) {
+	return new Promise((resolve, reject) => {
+		fs.unlink(process.cwd() + '/cccc.png', function (err) {
+			if (!err) {
+				return true
+			} else {
+				return false
+			}
+		})
 	})
 }
