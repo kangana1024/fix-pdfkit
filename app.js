@@ -15,10 +15,12 @@ const port = process.env.PORT ?? 3000;
 app.get('/', async (req, res) => {
 	try {
 		const body = await fetchImage()
-		const buff = new Uint8Array(body);
-		console.log("Src : ", buff)
-		// console.log(buff.toString('base64'))
-		// const imgBuff = buff.toString('base64');
+
+		// const buff = new Uint8Array(body);
+		// console.log("Src : ", body)
+		const buff = Buffer.from(body)
+		const imgbuff = buff.toString('base64');
+		console.log(imgbuff)
 		// const img = Buffer.from(imgBuff, "base64");
 
 		// return res.json({
@@ -28,7 +30,8 @@ app.get('/', async (req, res) => {
 		// const buff = new Buffer.from(body, 'base64')
 		// console.log(buff.toString('base64'))
 		// const logo = await fetchImageLogo("https://i.imgur.com/2ff9bM7.png");
-		doc.image(buff, {
+
+		doc.image('data:image/png;base64,'+imgbuff, {
 			fit: [250, 300],
 			align: 'center',
 			valign: 'center',
@@ -84,9 +87,11 @@ async function fetchImage() {
 	return new Promise(function (resolve, reject) {
 		const options = {
 			'method': 'GET',
-			'url': 'https://files-accounting.urbanice.app/file-upload-system/user/202212/1670901818001655864-original.png',
+			'url': 'https://accounting-s3-file-storage.s3.ap-southeast-1.amazonaws.com/file-upload-system/user/202212/1670918047003149933-original.png',
 			'headers': {
-			}
+			},
+			'responseType': 'arraybuffer',
+			'encoding': null
 		};
 		request(options, function (error, response) {
 			if (error) reject(error);
