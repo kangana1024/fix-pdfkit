@@ -121,7 +121,7 @@ function writeFileSync(content) {
 
 function unlinkSync(filename) {
 	return new Promise((resolve, reject) => {
-		fs.unlink(process.cwd() + '/cccc.png', function (err) {
+		fs.unlink(filename, function (err) {
 			if (!err) {
 				return true
 			} else {
